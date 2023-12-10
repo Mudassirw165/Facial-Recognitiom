@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Face Recognition</title>
+</head>
+
+<body>
+    <h1>Face Recognition</h1>
+
+    <form onsubmit="readFaces(); return false;">
+        <label for="user_id">Enter User ID:</label>
+        <input type="text" id="user_id" name="user_id" required>
+
+        <label for="user_name">Enter Your Name:</label>
+        <input type="text" id="user_name" name="user_name" required>
+
+        <button type="submit">Read Faces</button>
+    </form>
+
+    <!-- JavaScript for Socket.IO -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.0/socket.io.js"></script>
+
+    <!-- JavaScript for Socket.IO Communication -->
+    <script>
+        const socket = io.connect('http://' + document.domain + ':' + location.port);
+
+        socket.on('read_faces_response', function (data) {
+            console.log(data.message);
+            trainFaces();
+        });
+
+        socket.on('train_faces_response', function (data) {
+            console.log(data.message);
+            recognizeFaces();
+        });
+
+        socket.on('recognize_faces_response', function (data) {
+            console.log(data.message);
+        });
+
+        function readFaces() {
+            const user_id = document.getElementById('user_id').value;
+            const user_name = document.getElementById('user_name').value;
+
+            socket.emit('read_faces', { user_id, user_name });
+        }
+
+        function trainFaces() {
+            socket.emit('train_faces');
+        }
+
+        function recognizeFaces() {
+            socket.emit('recognize_faces');
+        }
+    </script>
+</body>
+
+</html>
